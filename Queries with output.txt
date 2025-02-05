@@ -1,0 +1,289 @@
+-- Create the 'ecommerce' database
+mysql> create database ecommerce;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| e_commerce         |
+| ecommerce          |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sakila             |
+| sys                |
+| world              |
++--------------------+
+8 rows in set (0.00 sec)
+
+
+-- Switch to the 'ecommerce' database
+mysql> use ecommerce;
+Database changed
+mysql>
+
+
+-- Create the 'customers' table
+mysql> CREATE TABLE customers (
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(100) NOT NULL,
+    -> email VARCHAR(100) UNIQUE NOT NULL,
+    -> address VARCHAR(300)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+
+-- Create the 'products' table
+mysql> CREATE TABLE products (
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(100) NOT NULL,
+    -> price INT NOT NULL,
+    -> description TEXT
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+
+-- Create the 'orders' table with a foreign key to 'customers'
+mysql> CREATE TABLE orders (
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> customer_id INT NOT NULL,
+    -> order_date DATE NOT NULL,
+    -> totol_amount INT NOT NULL,
+    -> FOREIGN KEY (customer_id) REFERENCES customers(id)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+
+-- Insert sample data into 'customers'
+mysql> INSERT INTO customers (name, email, address) VALUES
+    -> ('Rajesh Kumar', 'rajesh.kumar@gmail.com', 'No. 12, Brindavan Street, Chennai, Tamil Nadu - 600001'),
+    -> ('Priya Selvam', 'priya.s@outlook.com', '45/2, Gandhi Nagar, Coimbatore, Tamil Nadu - 641003'),
+    -> ('Suresh N', 'suresh.n@yahoo.com', 'Plot 7, Anna Salai, Madurai, Tamil Nadu - 625001'),
+    -> ('Karthikeyan N', 'karthi.n@gmail.com', 'A67, Dheeran Nagar, Trichy, Tamil Nadu - 620009'),
+    -> ('Karthik S', 'karthik.sub@gmail.com', '56, Nehru Street, Salem, Tamil Nadu - 636001'),
+    -> ('Meenakshi R', 'meenakshi.r@outlook.com', '78/3, Dr. Radhakrishnan Road, Tirunelveli, Tamil Nadu - 627001'),
+    -> ('Arun C', 'arun.c@yahoo.com', '34, Bharathi Street, Vellore, Tamil Nadu - 632001');
+Query OK, 7 rows affected (0.05 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+
+-- Insert sample data into 'products'
+mysql> INSERT INTO products (name, price, description) VALUES
+    -> ('Redmi Note 12', 149, 'Smartphone with 48MP Camera, 6GB RAM, 128GB Storage'),
+    -> ('Noise ColorFit Pro 4', 299, 'Smart Watch with Health Tracking, Multiple Sports Modes'),
+    -> ('Product C', 39, 'Standard product C'),
+    -> ('Realme 10', 169, '6.4" AMOLED Display, 50MP Camera, 8GB RAM'),
+    -> ('Boat Rockerz 255 Pro+', 129, 'Wireless Bluetooth in-Ear Neckband Earphones'),
+    -> ('Mi 5-Blade Mixer Grinder', 340, '500W, 3 Jars, Rust Proof'),
+    -> ('Campus Walking Shoes', 12, 'Men''s Comfortable Sports Shoes, Multiple Sizes'),
+    -> ('Prestige Mixer Grinder', 429, 'PKKMH 750W, 5 Jars, Stainless Steel'),
+    -> ('boAt Airdopes 131', 129, 'True Wireless Earbuds with Bluetooth 5.0');
+Query OK, 9 rows affected (0.01 sec)
+Records: 9  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO products (name, price, description) VALUES
+    -> ('Product A', 150, 'High-quality product A');
+Query OK, 1 row affected (0.04 sec)
+
+
+-- Insert sample data into 'orders'
+mysql> INSERT INTO orders (customer_id, order_date, totol_amount) VALUES
+    -> (1, '2025-01-15 10:00:00', 149),
+    -> (1, '2025-02-20 14:30:00', 469),
+    -> (1, '2025-03-10 11:45:00', 169),
+    -> (2, '2025-01-20 15:30:00', 468),
+    -> (2, '2025-02-25 09:15:00', 448),
+    -> (3, '2025-01-25 09:15:00', 169),
+    -> (4, '2025-02-01 11:45:00', 729),
+    -> (4, '2025-03-15 16:20:00', 141),
+    -> (5, '2025-02-10 14:20:00', 258),
+    -> (6, '2025-02-15 16:00:00', 448),
+    -> (6, '2025-03-20 13:30:00', 298),
+    -> (7, '2025-02-20 13:30:00', 298);
+Query OK, 12 rows affected, 12 warnings (0.01 sec)
+Records: 12  Duplicates: 0  Warnings: 12
+
+
+-- 9. Normalize by creating order_items table
+-- Create 'order_items' table
+mysql> CREATE TABLE order_items (
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> order_id INT NOT NULL,
+    -> product_id INT NOT NULL,
+    -> quantity INT NOT NULL,
+    -> unit_price INT NOT NULL,
+    -> FOREIGN KEY (order_id) REFERENCES orders(id),
+    -> FOREIGN KEY (product_id) REFERENCES products(id)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+-- Insert sample data into order_items'
+mysql> INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES
+    -> (1, 1, 1, 149),
+    -> (2, 6, 1, 340),
+    -> (2, 5, 1, 129),
+    -> (3, 4, 1, 169),
+    -> (4, 6, 1, 340),
+    -> (4, 9, 1, 129),
+    -> (5, 1, 1, 149),
+    -> (5, 2, 1, 299),
+    -> (6, 4, 1, 169),
+    -> (7, 8, 1, 429),
+    -> (7, 2, 1, 299),
+    -> (8, 7, 1, 12),
+    -> (8, 5, 1, 129),
+    -> (9, 5, 1, 129),
+    -> (9, 9, 1, 129),
+    -> (10, 1, 1, 149),
+    -> (10, 2, 1, 299),
+    -> (11, 4, 1, 169),
+    -> (11, 5, 1, 129),
+    -> (12, 4, 1, 169),
+    -> (12, 5, 1, 129);
+Query OK, 21 rows affected (0.01 sec)
+Records: 21  Duplicates: 0  Warnings: 0
+
+
+-- 1. Retrieve customers with orders in last 30 days
+mysql> SELECT DISTINCT *
+    -> FROM customers c
+    -> JOIN orders o ON c.id = o.customer_id
+    -> WHERE o.order_date >= CURDATE() - INTERVAL 30 DAY;
++----+---------------+-------------------------+----------------------------------------------------------------+----+-------------+------------+--------------+
+| id | name          | email                   | address                                                        | id | customer_id | order_date | totol_amount |
++----+---------------+-------------------------+----------------------------------------------------------------+----+-------------+------------+--------------+
+|  1 | Rajesh Kumar  | rajesh.kumar@gmail.com  | No. 12, Brindavan Street, Chennai, Tamil Nadu - 600001         |  2 |           1 | 2025-02-20 |          469 |
+|  1 | Rajesh Kumar  | rajesh.kumar@gmail.com  | No. 12, Brindavan Street, Chennai, Tamil Nadu - 600001         |  3 |           1 | 2025-03-10 |          169 |
+|  2 | Priya Selvam  | priya.s@outlook.com     | 45/2, Gandhi Nagar, Coimbatore, Tamil Nadu - 641003            |  4 |           2 | 2025-01-20 |          468 |
+|  2 | Priya Selvam  | priya.s@outlook.com     | 45/2, Gandhi Nagar, Coimbatore, Tamil Nadu - 641003            |  5 |           2 | 2025-02-25 |          448 |
+|  3 | Suresh N      | suresh.n@yahoo.com      | Plot 7, Anna Salai, Madurai, Tamil Nadu - 625001               |  6 |           3 | 2025-01-25 |          169 |
+|  4 | Karthikeyan N | karthi.n@gmail.com      | A67, Dheeran Nagar, Trichy, Tamil Nadu - 620009                |  7 |           4 | 2025-02-01 |          729 |
+|  4 | Karthikeyan N | karthi.n@gmail.com      | A67, Dheeran Nagar, Trichy, Tamil Nadu - 620009                |  8 |           4 | 2025-03-15 |          141 |
+|  5 | Karthik S     | karthik.sub@gmail.com   | 56, Nehru Street, Salem, Tamil Nadu - 636001                   |  9 |           5 | 2025-02-10 |          258 |
+|  6 | Meenakshi R   | meenakshi.r@outlook.com | 78/3, Dr. Radhakrishnan Road, Tirunelveli, Tamil Nadu - 627001 | 10 |           6 | 2025-02-15 |          448 |
+|  6 | Meenakshi R   | meenakshi.r@outlook.com | 78/3, Dr. Radhakrishnan Road, Tirunelveli, Tamil Nadu - 627001 | 11 |           6 | 2025-03-20 |          298 |
+|  7 | Arun C        | arun.c@yahoo.com        | 34, Bharathi Street, Vellore, Tamil Nadu - 632001              | 12 |           7 | 2025-02-20 |          298 |
++----+---------------+-------------------------+----------------------------------------------------------------+----+-------------+------------+--------------+
+11 rows in set (0.00 sec)
+
+
+-- 2. Get total amount of orders per customer
+mysql> SELECT c.id, name, SUM(totol_amount) as total_spent
+    -> FROM customers c
+    -> LEFT JOIN orders o ON c.id = o.customer_id
+    -> GROUP BY c.id;
++----+---------------+-------------+
+| id | name          | total_spent |
++----+---------------+-------------+
+|  1 | Rajesh Kumar  |         787 |
+|  2 | Priya Selvam  |         916 |
+|  3 | Suresh N      |         169 |
+|  4 | Karthikeyan N |         870 |
+|  5 | Karthik S     |         258 |
+|  6 | Meenakshi R   |         746 |
+|  7 | Arun C        |         298 |
++----+---------------+-------------+
+7 rows in set (0.00 sec)
+
+
+-- 3. Update Product C price
+mysql> UPDATE products
+    -> SET price = 45
+    -> WHERE name = 'Product C';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+
+-- 4. Add discount column to products
+mysql> ALTER TABLE products
+    -> ADD COLUMN discount INT DEFAULT 0;
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+-- 5. Get top 3 products by price
+mysql> SELECT *
+    -> FROM products
+    -> ORDER BY price DESC
+    -> LIMIT 3;
++----+--------------------------+-------+---------------------------------------------------------+----------+
+| id | name                     | price | description                                             | discount |
++----+--------------------------+-------+---------------------------------------------------------+----------+
+|  8 | Prestige Mixer Grinder   |   429 | PKKMH 750W, 5 Jars, Stainless Steel                     |        0 |
+|  6 | Mi 5-Blade Mixer Grinder |   340 | 500W, 3 Jars, Rust Proof                                |        0 |
+|  2 | Noise ColorFit Pro 4     |   299 | Smart Watch with Health Tracking, Multiple Sports Modes |        0 |
++----+--------------------------+-------+---------------------------------------------------------+----------+
+3 rows in set (0.00 sec)
+
+
+-- 6. Get customers who ordered 'Product A'
+mysql> SELECT DISTINCT c.name
+    -> FROM customers c
+    -> JOIN orders o ON c.id = o.customer_id
+    -> JOIN order_items oi ON o.id = oi.order_id
+    -> JOIN products p ON oi.product_id = p.id
+    -> WHERE p.name = 'Product A';
++--------------+
+| name         |
++--------------+
+| Meenakshi R  |
+| Rajesh Kumar |
++--------------+
+2 rows in set (0.00 sec)
+
+
+-- 7. Join orders and customers
+mysql> SELECT c.name, o.order_date, o.totol_amount
+    -> FROM orders o
+    -> JOIN customers c ON o.customer_id = c.id
+    -> ORDER BY o.order_date;
++---------------+------------+--------------+
+| name          | order_date | totol_amount |
++---------------+------------+--------------+
+| Rajesh Kumar  | 2025-01-02 |          149 |
+| Priya Selvam  | 2025-01-20 |          468 |
+| Suresh N      | 2025-01-25 |          169 |
+| Karthikeyan N | 2025-02-01 |          729 |
+| Karthik S     | 2025-02-10 |          258 |
+| Meenakshi R   | 2025-02-15 |          647 |
+| Rajesh Kumar  | 2025-02-20 |          668 |
+| Arun C        | 2025-02-20 |          298 |
+| Priya Selvam  | 2025-02-25 |          448 |
+| Rajesh Kumar  | 2025-03-10 |          169 |
+| Karthikeyan N | 2025-03-15 |          141 |
+| Meenakshi R   | 2025-03-20 |          298 |
++---------------+------------+--------------+
+12 rows in set (0.00 sec)
+
+
+-- 8. Get orders over ₹150
+mysql> SELECT *
+    -> FROM orders
+    -> WHERE totol_amount > 150;
++----+-------------+------------+--------------+
+| id | customer_id | order_date | totol_amount |
++----+-------------+------------+--------------+
+|  2 |           1 | 2025-02-20 |          668 |
+|  3 |           1 | 2025-03-10 |          169 |
+|  4 |           2 | 2025-01-20 |          468 |
+|  5 |           2 | 2025-02-25 |          448 |
+|  6 |           3 | 2025-01-25 |          169 |
+|  7 |           4 | 2025-02-01 |          729 |
+|  9 |           5 | 2025-02-10 |          258 |
+| 10 |           6 | 2025-02-15 |          647 |
+| 11 |           6 | 2025-03-20 |          298 |
+| 12 |           7 | 2025-02-20 |          298 |
++----+-------------+------------+--------------+
+10 rows in set (0.00 sec)
+
+
+-- 10. Get average order total
+mysql> SELECT AVG(totol_amount) as average_order_total
+    -> FROM orders;
++---------------------+
+| average_order_total |
++---------------------+
+|            370.1667 |
++---------------------+
+1 row in set (0.00 sec)
